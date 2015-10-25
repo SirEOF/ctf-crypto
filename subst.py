@@ -2,10 +2,6 @@
 
 import base64
 
-# input = "uozdovhhob zigrxfozgrmt slmvbyzwtvi"
-input = "JedmRUT0sYMyReNlQOpdAYFqwPT0t2vqQPTgRPAyv2znAZvnueldRUTzvUTKsPRdueBztekyLYXat3BzvY9qsONrDaTPsYX0AYzzuqTrsYMyQeNdtaTcvOBaROIyQPE/"
-
-# Range of 97 - 122
 def getLetterWithOffset(offset, letter):
 	letterNum = ord(letter)
 	if letterNum <= ord('z') and letterNum >= ord('a'):
@@ -31,6 +27,7 @@ def wordWithOffset(offset, word):
 
 def reverseWordWithOffset(offset, word):
 	return wordWithOffset(offset, word)[::-1]
+	return wordWithOffset(offset, word)[::-1]
 
 def calcRotations():
 	out = []
@@ -46,7 +43,8 @@ def b64DecodeRotations():
 
 	return decoded
 
-def normalCharsOnly(text, unknownChar):
+# Any unusal characters are turned into the unknownChar provided
+def normalCharsOnly(text, unknownChar='*'):
 	output = ''
 	for c in text:
 		char_num = ord(c)
@@ -137,18 +135,12 @@ def sortByEnglishRank(array):
 	def keyFunc(line):
 		return -englishRank(line)
 	return sorted(array, key=keyFunc)
-	# dictionary = {}
-	# ranks = []
-	# for line in array:
-	# 	rank = englishRank(line)
-	# 	dictionary[line] = rank
-	# 	ranks.append(rank)
 
 def printArray(array):
 	for line in array:
 		print(line)
-
-def substitute(text, dictionary):
+# Substitutes char in a string of text, based on entries defined in a python dicionary
+def substitute(text, dictionary, unknownChar='*'):
 	out = ''
 	for char in text:
 		charPrinted = False
@@ -161,11 +153,11 @@ def substitute(text, dictionary):
 				charPrinted = True
 				break
 		if not(charPrinted):
-			out += '*'
+			out += unknownChar
 	return out
 
 # If the pivot is encountered in the text it is replaced with a *
-def flipAsciiOverPivot(text, pivot, offset):
+def flipAsciiOverPivot(text, pivot, offset, pivotChar='*'):
 	out = ''
 	for char in text:
 		charNum = ord(char)
@@ -179,115 +171,19 @@ def flipAsciiOverPivot(text, pivot, offset):
 			out += chr(charNum - offset)
 			continue
 		else:
-			out += '*'
+			out += pivotChar
 	return out
 
-
-
-
-lines = [
-	'x46>2? A@DE65 @? 9:D A286] a w@FCD p8@',
-	's2:=J &A52E6i %96 DE@4< 6I492?86 92D 366? E2<6? 5@H? 2?5 H6 2C6 :? E96 AC@46DD @7 EC2?D76C:?8 2== 4C656?E:2=D E@ @FC D6CG6CD] x?7:=EC2E:@? @7 !~$x) 32?< :D 4@?E:?F:?8 2D A=2??65]',
-
-	'$925@H $ECJ<6 A@DE65 2 ?6H 6IA=@:E c w@FCD p8@',
-	'#@@E 4@?EC@= G:2 >@5048: 2?5 32D9] }@E6i ~C:8:?2= 7:I 7@C GF=?6C23:=:EJ 5@6D ?@E C6D@=G6 E96 AC@3=6>] tIA=@:E DE:== 24E:G6]',
-	'`b s@H?=@25D',
-
-	'_Istpsqttu  4@??64E65 H:E9 q=24<(`5@H  ] d w@FCD p8@',
-
-	'$A6I  FA=@2565 2 ?6H 4@56D?:AA6E] d w@FCD p8@',
-	'g \':6HD',
-	]
-
-
-dictionary= {
-	'p': 'a',
-	'8': 'g',
-	'@': 'o',
-	'w': 'h',
-	'F': 'u',
-	'C': 'r',
-	'D': 's',
-	's': 'D',
-	'2': 'a',
-	':': 'i',
-	'=': 'l',
-	'J': 'y',
-	'%': 'T',
-	'9': 'h',
-	'6': 'e',
-	'&': 'U',
-	'A': 'p',
-	'5': 'd',
-	'2': 'a',
-	'E': 't',
-	'6': 'e',
-	'i': ':',
-	'4': 'c',
-	'<': 'k',
-	'3': 'b',
-	'?': 'n',
-	']': '.',
-	'I': 'x',
-	'x': 'I',
-	'7': 'f',
-	'H': 'w',
-	'G': 'v',
-	'}': 'N',
-	'>': 'm',
-	't': 'E',
-	'#': 'R',
-	'0': '_',
-	'~': 'O',
-	'$': 'S',
-	'`': '1',
-	'a': '2',
-	'b': '3',
-	'c': '4',
-	'd': '5',
-	'e': '6',
-	'f': '7',
-	'g': '8',
-	'h': '9',
-	'\'': 'V'
-}
-
-# print(substitute(text1, dictionary))
-# print(flipAsciiOverPivot(conversation, 91, 47))
-for line in lines:
-	print(flipAsciiOverPivot(line, 91, 47))
-	# print(substitute(line, dictionary))
-
-# print(wordCrack(text5, 47, 47))
-
-# print(ord('') - ord('2'))
-
-# print(ord('p') - ord('a'))
-# print(ord('8') - ord('g'))
-# print(ord('@') - ord('o'))
-
-# print(ord('w') - ord('h'))
-# print(ord('@') - ord('o'))
-# print(ord('F') - ord('u'))
-# print(ord('C') - ord('r'))
-# print(ord('D') - ord('s'))
-
-
-# printArray(sortByEnglishRank(b64DecodeRotations()))
-# printArray(sortByEnglishRank([
-# 	'flawlessly articulating honeybadger',
-# 	'flawlessly articulating doneypazger',
-# 	'flawlessly articulating doneymaqger',
-# 	'flawlessly articulating moneypazger',
-# 	'flawlessly articulating doneymazger',
-# 	'flawlessly articulating doneymavger',
-# 	'flawlessly articulating honeypazger',
-# 	'flawlessly articulating moneybadger',
-# 	'flawlessly articulating doneymahger',
-# 	'flawlessly articulating honeymaqger',
-# 	'flawlessly articulating doneypaxger'
-# 	]))
-
-# print(matchesBigram('te', 'tee'))
-# printDecodedRotations()
-
+# Uses a completley reversed alphabet to perform a substitution
+def reverseAlphabetSubstitution(text):
+	out = ''
+	for char in text:
+		charNum = ord(char)
+		if char == ' ':
+			out += ' '
+			continue
+		elif charNum >= ord('a') and charNum <= ord('z'):
+			out += chr(ord('a') + (ord('z') - charNum))
+		elif charNum >= ord('A') and charNum <= ord('Z'):
+			out += chr(ord('A') + (ord('Z') - charNum))
+	return out;
