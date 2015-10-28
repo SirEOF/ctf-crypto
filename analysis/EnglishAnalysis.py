@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 def matchesTrigram(text, trigram):
 	if len(text) != 3 or len(trigram) != 3:
@@ -62,3 +62,9 @@ def matchBigramsInText(text):
 
 def englishRank(text):
 	return float((matchBigramsInText(text) + matchTrigramsInText(text))) / float(len(text))
+
+def sortByEnglishRank(array):
+	import analysis
+	def keyFunc(line):
+		return -analysis.englishRank(line)
+	return sorted(array, key=keyFunc)

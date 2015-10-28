@@ -1,13 +1,24 @@
+#!/usr/bin/env python3
+
 def printArray(array):
 	for line in array:
 		print(line)
 
-def sortByEnglishRank(array):
-	import analysis
-	def keyFunc(line):
-		return -analysis.englishRank(line)
-	return sorted(array, key=keyFunc)
-
 if __name__ == '__main__':
-	import substitution
-	printArray(sortByEnglishRank(substitution.b64DecodeRotations()))
+	import substitution as sub
+	import analysis as ans
+	from util import *
+
+	# print(CipherInput(CipherType.reverse_alphabet, "uozdovhhob zigrxfozgrmt slmvbyzwtvi").decrypt()[0])
+
+	# cipherArr = CipherInput(CipherType.cesar, "JedmRUT0sYMyReNlQOpdAYFqwPT0t2vqQPTgRPAyv2znAZvnueldRUTzvUTKsPRdueBztekyLYXat3BzvY9qsONrDaTPsYX0AYzzuqTrsYMyQeNdtaTcvOBaROIyQPE/", 1).decrypt()
+	# print(cipherArr[0].generateCipherInput(CipherType.base64).decrypt()[0])
+
+	# for cipher in cipherArr:
+	# printArray(CipherInput(CipherType.base64, "RmluZCB0aGUgZmVtYWxlIGNyeXB0b2dyYXBoZXIgd2hvIHdvcmtlZCBhdCBSaXZlcmJhbmsgTGFib3JhdG9yaWVzLiBXaGF0IGhhcyBzaGUgYmVlbiBkdWJiZWQgYXM/").decrypt())
+	# printArray(ans.sortByEnglishRank(sub.b64DecodeRotations(
+	# 	'JedmRUT0sYMyReNlQOpdAYFqwPT0t2vqQPTgRPAyv2znAZvnueldRUTzvUTKsPRdueBztekyLYXat3BzvY9qsONrDaTPsYX0AYzzuqTrsYMyQeNdtaTcvOBaROIyQPE/', '.')))
+
+	# print(sub.vigenereDecryptWithKey('mlal bw s mxwl', 'test'))
+	print(sub.findRepeatedSequenceOffsets('RIKVBIYBITHUSEVAZMMLTKASRNHPNPZICSWDSVMBIYFQEZUBZPBRGYNTBURMBECZQKBMBPAWIXSOFNUZECNRAZFPHIYBQEOCTTIOXKUNOHMRGCNDDXZWIRDVDRZYAYYICPUYDHCKXQIECIEWUICJNNACSAZZZGACZHMRGXFTILFNNTSDAFGYWLNICFISEAMRMORPGMJLUSTAAKBFLTIBYXGAVDVXPCTSVVRLJENOWWFINZOWEHOSRMQDGYSDOPVXXGPJNRVILZNAREDUYBTVLIDLMSXKYEYVAKAYBPVTDHMTMGITDZRTIOVWQIECEYBNEDPZWKUNDOZRBAHEGQBXURFGMUECNPAIIYURLRIPTFOYBISEOEDZINAISPBTZMNECRIJUFUCMMUUSANMMVICNRHQJMNHPNCEPUSQDMIVYTSZTRGXSPZUVWNORGQJMYNLILUKCPHDBYLNELPHVKYAYYBYXLERMMPBMHHCQKBMHDKMTDMSSJEVWOPNGCJMYRPYQELCDPOPVPBIEZALKZWTOPRYFARATPBHGLWWMXNHPHXVKBAANAVMNLPHMEMMSZHMTXHTFMQVLILOVVULNIWGVFUCGRZZKAUNADVYXUDDJVKAYUYOWLVBEOZFGTHHSPJNKAYICWITDARZPVU', 30))
+	# print(sub.findRepeatedSequenceOffsets('text bla ste text'))
