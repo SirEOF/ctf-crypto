@@ -6,6 +6,10 @@ from util import CipherInput
 from util import CipherOutput
 from util import CipherType
 import operator
+from analysis import getLetterFreq
+from analysis import stripNonAlphaChars
+from analysis import chiSquaredTestPVal
+from analysis import simpleEnglishFrequencyScore
 
 ###########
 # PRIVATE #
@@ -32,14 +36,20 @@ def getLetterWithOffset(offset, letter):
 
 
 
-def wordWithOffset(offset, word):
+def encodeWordWithOffset(offset, word):
 	out = ''
 	for char in word:
 		out += getLetterWithOffset(offset, char)
 	return out
 
+def decodeWordWithOffset(offset, word):
+	out = ''
+	for char in word:
+		out += getLetterWithOffset(-offset, char)
+	return out
+
 def reverseWordWithOffset(offset, word):
-	return wordWithOffset(offset, word)[::-1]
+	return encodeWordWithOffset(offset, word)[::-1]
 
 # Uses a completley reversed alphabet to perform a substitution
 def reverseAlphabetSubstitution(text):
@@ -99,8 +109,13 @@ def vigenereDecryptWithKey(text, key):
 
 	out = ''
 	for char in text:
-		if char == ' ':
-			out += ' '
+		charNum = ord(char)
+		if (
+			(charNum >= ord(' ') and charNum <= ord('@'))
+			or (charNum >= ord('[') and charNum <= ord('`'))
+			or (charNum >= ord('{') and charNum <= ord('~'))
+		):
+			out += char
 			continue
 
 		offset = (ord(key[keypos]) - ord('a'))
@@ -162,7 +177,8 @@ def findRepeatedSequenceOffsetsAndCounts(text):
 
 	return sorted(matchDiffsAndFactors.items(), key=operator.itemgetter(1), reverse=True)
 
-def findRepeatedSequenceOffsets(text, threshold=None):
+#Sorted in order by most likely
+def findPossibleKeyLengths(text, threshold=None):
 	assert threshold is None or threshold >= 1
 
 	arr = findRepeatedSequenceOffsetsAndCounts(text)
@@ -178,6 +194,90 @@ def findRepeatedSequenceOffsets(text, threshold=None):
 	else:
 		return rawList
 
+def getStringsForKeyLength(keylength, text):
+	assert isinstance(keylength, int)
+	assert isinstance(text, str)
+
+	text = text.replace(' ', '')
+
+	result = []
+
+	for start in range(0, keylength):
+		out = ''
+		for i in range(start, len(text), keylength):
+			out += text[i]
+		result.append(out)
+	return result
+
+def getMostLikleyKeysForLength(keylength, text):
+	baseStrings = getStringsForKeyLength(keylength, text)
+
+	final_chars = []
+
+	for string in baseStrings:
+		rots = decodeAllRotationsForText(string)
+
+		result = []
+
+		offset = 0
+		for rotation in rots:
+			rotation = stripNonAlphaChars(rotation)
+			rotation = rotation.lower()
+			result.append((chr(ord('a') + offset), rotation, chiSquaredTestPVal(rotation)))
+			offset += 1
+
+		def sortFunc(item):
+			return item[2]
+
+		final_chars.append(sorted(result, key=sortFunc, reverse=True)[0][0])
+	return ''.join(final_chars)
+
+def simpleGetMostLikleyKeysForLength(keylength, text):
+	baseStrings = getStringsForKeyLength(keylength, text)
+
+	final_chars = []
+
+	for string in baseStrings:
+		rots = decodeAllRotationsForText(string)
+
+		result = []
+
+		offset = 0
+		for rotation in rots:
+			rotation = stripNonAlphaChars(rotation)
+			rotation = rotation.lower()
+			result.append((chr(ord('a') + offset), rotation, simpleEnglishFrequencyScore(rotation, 4)))
+			offset += 1
+
+		def sortFunc(item):
+			return item[2]
+
+		final_chars.append(sorted(result, key=sortFunc, reverse=True)[0])
+		return final_chars
+	# return ''.join(final_chars)
+
+def makeAllPossibleKeysFromChars(charListPerPositionInKey):
+	keylen = len(charListPerPositionInKey)
+	numkeys = len(charListPerPositionInKey[0])
+
+	for charList in charListPerPositionInKey:
+		print(comboStr)
+
+		# while len(comboStr) <= keylen:
+
+
+
+def encodeAllRotationsForText(text):
+	result = []
+	for offset in range(0,26):
+		result.append(encodeWordWithOffset(offset, text))
+	return result
+
+def decodeAllRotationsForText(text):
+	result = []
+	for offset in range(0,26):
+		result.append(encodeWordWithOffset(-offset, text))
+	return result
 
 ##########
 # PUBLIC #
@@ -188,11 +288,11 @@ def decryptRotation(cipher):
 	assert cipher.getCipherType().name == CipherType.cesar.name
 	if cipher.getKey() is not None:
 		assert cipher.getKey().isdigit()
-		return [CipherOutput(cipher, wordWithOffset(int(cipher.getKey()), cipher.getInput()))]
+		return [CipherOutput(cipher, encodeWordWithOffset(int(cipher.getKey()), cipher.getInput()))]
 	else:
 		resultCiphers = []
 		for offset in range(0,26):
-			resultCiphers.append(CipherOutput(cipher, wordWithOffset(offset, cipher.getInput()), offset))
+			resultCiphers.append(CipherOutput(cipher, encodeWordWithOffset(offset, cipher.getInput()), offset))
 		return resultCiphers
 
 def decryptB64(cipher):
@@ -205,3 +305,11 @@ def decryptB64(cipher):
 def decryptReverseAlphabet(cipher):
 	assert isinstance(cipher, CipherInput)
 	return [CipherOutput(cipher, reverseAlphabetSubstitution(cipher.getInput()))]
+
+def decryptVigionare(text):
+	key_size_arr = findPossibleKeyLengths(text, threshold=10)
+
+	for size in key_size_arr:
+		key = getMostLikleyKeysForLength(size, text)
+		print('Size: ' + str(size) + ' - Key: ' + key)
+		print(vigenereDecryptWithKey(text, key))

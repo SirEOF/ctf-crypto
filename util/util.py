@@ -34,6 +34,9 @@ def factor(num):
 
 	return sorted(set(allFactors))
 
+# def doLetterFreqsMatchEnglish(dicitonaryOfPercentages):
+	
+
 class CipherType(Enum):
 	cesar = 1
 	reverse_alphabet = 2
