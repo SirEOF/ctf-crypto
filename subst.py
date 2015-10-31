@@ -17,11 +17,9 @@ def getLetterWithOffset(offset, letter):
 	else:
 		return letter
 
-
-
 def wordWithOffset(offset, word):
 	out = ''
-	for char in input:
+	for char in word:
 		out += getLetterWithOffset(offset, char)
 	return out
 
@@ -29,10 +27,10 @@ def reverseWordWithOffset(offset, word):
 	return wordWithOffset(offset, word)[::-1]
 	return wordWithOffset(offset, word)[::-1]
 
-def calcRotations():
+def calcRotations(text):
 	out = []
 	for offset in range(0,26):
-		out.append(wordWithOffset(offset, input))
+		out.append(wordWithOffset(offset, text))
 	return out;
 
 def b64DecodeRotations():
